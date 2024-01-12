@@ -1,0 +1,32 @@
+.canvas-wrapper {
+   margin-top: 20px;
+   display: flex;
+   justify-content: center;
+
+   .container {
+      padding: 4px 4px 0px;
+      border: 5px solid darken(#1099bb, 5%);
+
+      canvas {
+         margin: 0;
+      }
+   }
+}
+
+
+.button-wrapper {
+   margin-top: 20px;
+   display: flex;
+   justify-content: center;
+
+   button {
+      padding: 20px 40px;
+      border: 5px solid darken(#1099bb, 5%);
+      background: #FFF;
+      line-height: 30px;
+      font-size: 24px;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+   }
+}
