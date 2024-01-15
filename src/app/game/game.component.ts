@@ -4,7 +4,6 @@ import { gsap } from 'gsap';
 import { GeneralConfig as Config } from '../core/config/general.config';;
 import { ReelsService } from '../core/services/reels.service';
 import { AssetsService } from '../core/services/assets.service';
-import { Reel } from '../core/types/reel.type';
 
 @Component({
    selector: 'app-game',
