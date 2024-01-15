@@ -23,41 +23,41 @@ export class GameComponent implements OnInit, OnDestroy {
    private running: boolean = false;
 
    constructor(
-      private reelsService: ReelsService,
-      private assetsService: AssetsService
+      private assetsService: AssetsService,
+      private reelsService: ReelsService    
    ) {}
 
    ngOnInit(): void {
+      // Create new app.
       this.app = new PIXI.Application({
          width:      Config.reelsTotalWidth,
          height:     Config.reelsTotalHeight,
          background: Config.BACKGROUND
       });
 
+      // Load assets + generate reels for game.
       this.assetsService.loadAssets().then(() => {
-         this.reelsService.initializeReels();
-         this.generateReelsContainer();
+         this.handleReels();
          requestAnimationFrame(this.animate.bind(this));
       });
 
+      // Add canvas to html container.
       this.pixiContainer.nativeElement.appendChild(this.app.view);
    }
 
-   private generateReelsContainer(): void {
-      const reels = this.reelsService.getReels();
-      const reelsContainer = this.reelsService.getReelsContainer();
-
-      reels.forEach((reel) => {
-         reelsContainer.addChild(reel.container);
-      });
-
-      this.app.stage.addChild(reelsContainer);
+   // Handle generate reels and adding container with reels to app.
+   private handleReels(): void {
+      this.reelsService.generateReels();
+      this.reelsService.buildReelsContainer();
+      this.app.stage.addChild(this.reelsService.getReelsContainer());      
    }
 
+   // Get running state for button.
    public getRunningState(): boolean {
       return this.running
    }
 
+   // Start game method call on button.
    public startPlay(): void {
 
       if (this.running) return;
@@ -65,22 +65,27 @@ export class GameComponent implements OnInit, OnDestroy {
 
       const reels = this.reelsService.getReels()
 
+      // GSAP create master timeline for animation, and adding parallel timelines to run all reals same time.
       this.timeline = gsap.timeline({ repeat: 0 , onComplete: () => this.animationComplete()});
       this.timeline.add("paralell", 0)
 
       for (let i = 0; i < reels.length; i++) {
+         // Random animation speed
          const duration = Math.random() * (6 - 3) + 3;
+         // The final position of a reel. Result can be calculated here or we can set result here from API.
          const nextPosition = reels[i].position + Math.floor(Math.random() * ((Config.SYMBOLS_QTY - 3) - 10 + 1) + 10) * Config.SYMBOL_SIZE;
-
+         // GSAP animation
          this.timeline.fromTo(reels[i].container, { y: -reels[i].position }, { y: -nextPosition, duration, ease: Config.SPIN_ANIMATION }, "paralell");
       }
    }
 
+   // Fires once all animations completed, releases the play button.
    private animationComplete(): void {
       this.timeline.kill();
       this.running = false;
    }
 
+   // DeltaTime solution for fps increase.
    private animate(): void {
 
       const currentTime = Date.now();
